@@ -20,7 +20,7 @@ public class HelpDesk {
 		}
 		int id = request.getId();
 		if (requestsById.containsKey(id)) {
-			throw new IllegalArgumentException("Duplicate request ID: + id");
+			throw new IllegalArgumentException("Duplicate request ID: " + id);
 		}
 
 		requestsById.put(id, request);
@@ -37,7 +37,12 @@ public class HelpDesk {
 
 		SupportRequest request = findRequest(requestId);
 		if (request == null) {
-			throw new IllegalArgumentException("No request with ID " + request);
+			throw new IllegalArgumentException("No request with ID " + requestId);
+		}
+
+		// a request may NOT be assigned more than once to the same technician
+		if (isAssigned(request)) {
+			throw new IllegalArgumentException("Request " + requestId + " is already assigned to a technician");
 		}
 
 		List<SupportRequest> techRequests = assignments.get(technician);
@@ -46,14 +51,14 @@ public class HelpDesk {
 			assignments.put(technician, techRequests);
 		}
 
-		if (techRequests.contains(request)) {
-			throw new IllegalArgumentException("Request " + requestId + " is already assigned to this technician");
-		}
-
 		techRequests.add(request);
 	}
 
 	public int resolveRequest(Technician technician, int requestId) {
+		if (technician == null) {
+			throw new IllegalArgumentException("Technician cannot be null!");
+		}
+
 		List<SupportRequest> techRequests = assignments.get(technician);
 		if (techRequests == null) {
 			throw new IllegalArgumentException("Technician has no assignments");
@@ -88,14 +93,28 @@ public class HelpDesk {
 	}
 
 	public void printAssignmentsFor(Technician technician) {
-        List<SupportRequest> techRequests = assignments.get(technician);
-        System.out.println("Assignments for " + technician + ":");
-        if (techRequests == null || techRequests.isEmpty()) {
-            System.out.println("  (none)");
-            return;
-        }
-        for (SupportRequest r : techRequests) {
-            System.out.println("  " + r);
-        }
+		if (technician == null) {
+			throw new IllegalArgumentException("Technician cannot be null!");
+		}
+
+		List<SupportRequest> techRequests = assignments.get(technician);
+		System.out.println("Assignments for " + technician + ":");
+		if (techRequests == null || techRequests.isEmpty()) {
+			System.out.println("  (none)");
+			return;
+		}
+		for (SupportRequest r : techRequests) {
+			System.out.println("  " + r);
+		}
+	}
+
+	// helper for assignRequest
+	private boolean isAssigned(SupportRequest request) {
+		for (List<SupportRequest> techRequests : assignments.values()) {
+			if (techRequests.contains(request)) {
+				return true;
+			}
+		}
+		return false;
 	}
 }
