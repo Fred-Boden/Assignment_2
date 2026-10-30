@@ -4,7 +4,7 @@ public abstract class AbstractSupportRequest implements SupportRequest {
 	private final int id;
 	private final String title;
 	private final int basePoints;
-	private boolean resolved;
+	protected boolean resolved;
 	
 	public AbstractSupportRequest(int id, String title, int basePoints) {
 		if (id <= 0) { throw new IllegalArgumentException("ID must be positive."); }

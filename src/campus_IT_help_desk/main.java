@@ -34,6 +34,7 @@ public class main {
 		helpDesk.resolveRequest(tech1, 3);
 		helpDesk.resolveRequest(tech2, 5);
 		//Fail-fast Display (try to resolve already resolved request)
+		//Comment out the next line to get full main outputs
 		helpDesk.resolveRequest(tech2, 5);
 		
 		System.out.println("PRINTING ALL REQUESTS");
